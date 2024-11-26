@@ -53,8 +53,6 @@ class SmartRoom:
         return GPIO.input(self.PHOTO_PIN)
 
     def manage_light_level(self) -> None:
-        # To be implemented
-        pass
 
     def manage_window(self) -> None:
         # To be implemented
