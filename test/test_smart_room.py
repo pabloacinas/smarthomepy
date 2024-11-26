@@ -91,7 +91,7 @@ To mock a property like Adafruit_BMP280_I2C.temperature, you should add the foll
     @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
     def test_open_window(self, mock_temperature: Mock):
         smart_room = SmartRoom()
-        mock_temperature.side_effect = [20, 25]
+        mock_temperature.side_effect = [20, 25] #indoor, outdoor
         smart_room.manage_window()
         self.assertTrue(smart_room.window_open)
 
@@ -102,6 +102,27 @@ To mock a property like Adafruit_BMP280_I2C.temperature, you should add the foll
         smart_room.manage_window()
         self.assertFalse(smart_room.window_open)
 
+    @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
+    def test_manage_window_below_18(self, mock_temperature: Mock):
+        smart_room = SmartRoom()
+        mock_temperature.side_effect = [15, 20]
+        smart_room.manage_window()
+        self.assertFalse(smart_room.window_open)
 
+    @patch.object(Adafruit_BMP280_I2C, "temperature", new_callable=PropertyMock)
+    def test_manage_window_above_30(self, mock_temperature: Mock):
+        smart_room = SmartRoom()
+        mock_temperature.side_effect = [35, 20]
+        smart_room.manage_window()
+        self.assertFalse(smart_room.window_open)
+
+    @patch.object(SenseairS8, "co2")
+    @patch.object(GPIO, "output")
+    def test_monitor_air_quality_turn_on_fan(self, mock_output: Mock, mock_co2: Mock):
+        smart_room = SmartRoom()
+        mock_co2.return_value = 800
+        smart_room.monitor_air_quality()
+        mock_output.assert_called_with(smart_room.FAN_PIN, GPIO.HIGH)
+        self.assertTrue(smart_room.fan_on)
 
 
