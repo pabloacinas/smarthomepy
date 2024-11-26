@@ -44,16 +44,16 @@ class TestSmartRoom(unittest.TestCase):
         mock_led.assert_called_with(smart_room.LED_PIN, GPIO.HIGH)
         self.assertTrue(smart_room.light_on)
 
-        # When the room is occupied and the there is enough light, the light should not be turned on
-        @patch.object(GPIO, "input")
-        @patch.object(GPIO, "output")  # led
-        def test_room_is_occupied_and_enough_light(self, mock_led: Mock, mock_sensors: Mock):
-            mock_sensors.side_effect = [True, True]
-            smart_room = SmartRoom()
-            smart_room.light_on = False
-            smart_room.manage_light_level()
-            mock_led.assert_not_called()
-            self.assertFalse(smart_room.light_on)
+    # When the room is occupied and the there is enough light, the light should not be turned on
+    @patch.object(GPIO, "input")
+    @patch.object(GPIO, "output")  # led
+    def test_room_is_occupied_and_enough_light(self, mock_led: Mock, mock_sensors: Mock):
+        mock_sensors.side_effect = [True, True]
+        smart_room = SmartRoom()
+        smart_room.light_on = False
+        smart_room.manage_light_level()
+        mock_led.assert_called_with(smart_room.LED_PIN, GPIO.LOW)
+        self.assertFalse(smart_room.light_on)
 
 
 
