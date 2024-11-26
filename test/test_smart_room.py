@@ -94,6 +94,7 @@ class TestSmartRoom(unittest.TestCase):
         smart_room.manage_window()
         self.assertFalse(smart_room.window_open)
 
+    # When the CO2 level is greater or equal 800 ppm, the fan should be turned on
     @patch.object(SenseairS8, "co2")
     @patch.object(GPIO, "output")
     def test_monitor_air_quality_turn_on_fan(self, mock_output: Mock, mock_co2: Mock):
@@ -103,6 +104,7 @@ class TestSmartRoom(unittest.TestCase):
         mock_output.assert_called_with(smart_room.FAN_PIN, GPIO.HIGH)
         self.assertTrue(smart_room.fan_on)
 
+    # When the CO2 level is less than 500 ppm, the fan should be turned off
     @patch.object(SenseairS8, "co2")
     @patch.object(GPIO, "output")
     def test_monitor_air_quality_turn_off_fan(self, mock_output: Mock, mock_co2: Mock):
