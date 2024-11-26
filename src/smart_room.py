@@ -53,17 +53,25 @@ class SmartRoom:
         return GPIO.input(self.PHOTO_PIN)
 
     def manage_light_level(self) -> None:
-        if self.check_room_occupancy():
-            if not self.check_enough_light():
-                GPIO.output(self.LED_PIN, GPIO.HIGH)
-                self.light_on = True
-            else:
-                GPIO.output(self.LED_PIN, GPIO.LOW)
-                self.light_on = False
+        if self.check_room_occupancy() and not self.check_enough_light():
+            GPIO.output(self.LED_PIN, GPIO.HIGH)
+            self.light_on = True
+        else:
+            GPIO.output(self.LED_PIN, GPIO.LOW)
+            self.light_on = False
+
 
     def manage_window(self) -> None:
-        # To be implemented
-        pass
+        indoor_temp = self.bmp280_indor.temperature
+        outdoor_temp = self.bmp280_outdoor.temperature
+
+        if 18 <= indoor_temp <= 30 and 18 <= outdoor_temp <= 30:
+            if indoor_temp < outdoor_temp - 2:
+                self.change_servo_angle((180 / 18) + 2)
+                self.window_open = True
+            elif indoor_temp > outdoor_temp + 2:
+                self.change_servo_angle((0 / 18) + 2)
+                self.window_open = False
 
     def monitor_air_quality(self) -> None:
         # To be implemented
